@@ -44,6 +44,21 @@ export const colors = {
     active: '#2980b9', // Botão ativo
   },
 
+  // Syntax Highlighting para o editor de código
+  syntax: {
+    keyword: '#e74c3c', // Vermelho para palavras-chave (void, int, if, etc.)
+    function: '#3498db', // Azul para funções (setup, loop, pinMode, etc.)
+    string: '#27ae60', // Verde para strings
+    number: '#f39c12', // Laranja para números
+    comment: '#95a5a6', // Cinza para comentários
+    constant: '#9b59b6', // Roxo para constantes (HIGH, LOW, etc.)
+    preprocessor: '#e67e22', // Laranja escuro para preprocessor (#include, #define)
+    operator: '#ecf0f1', // Branco para operadores (+, -, =, etc.)
+    bracket: '#f1c40f', // Amarelo para chaves, parênteses
+    variable: '#ecf0f1', // Branco para variáveis
+    type: '#e74c3c', // Vermelho para tipos de dados
+  },
+
   // Transparências
   overlay: 'rgba(0, 0, 0, 0.5)',
   transparent: 'transparent',

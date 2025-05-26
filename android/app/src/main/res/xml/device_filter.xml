@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Arduino Uno (ATmega328P) -->
+    <usb-device vendor-id="9025" product-id="67" />
+    
+    <!-- Arduino Nano (ATmega328P) -->
+    <usb-device vendor-id="9025" product-id="7523" />
+    
+    <!-- ESP32 DevKit -->
+    <usb-device vendor-id="4292" product-id="60000" />
+    
+    <!-- ESP8266 NodeMCU -->
+    <usb-device vendor-id="4292" product-id="60001" />
+    
+    <!-- CH340 (clones Arduino) -->
+    <usb-device vendor-id="6790" product-id="29987" />
+    
+    <!-- FTDI (Arduino Uno R3) -->
+    <usb-device vendor-id="1027" product-id="24577" />
+    
+    <!-- CP2102 (ESP32/ESP8266) -->
+    <usb-device vendor-id="4292" product-id="60000" />
+    
+    <!-- Arduino Mega 2560 -->
+    <usb-device vendor-id="9025" product-id="66" />
+    
+    <!-- Arduino Leonardo -->
+    <usb-device vendor-id="9025" product-id="32823" />
+    
+    <!-- Arduino Micro -->
+    <usb-device vendor-id="9025" product-id="32824" />
+</resources> 
