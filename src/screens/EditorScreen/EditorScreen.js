@@ -13,13 +13,14 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {colors, typography, spacing} from '../../theme';
-import {Button} from '../../components';
+import {Button, LibraryManager} from '../../components';
 
 // Importar serviços
 import USBService from '../../services/USBService/USBService';
 import CompilerService from '../../services/CompilerService/CompilerService';
 import BoardService from '../../services/BoardService/BoardService';
 import FileService from '../../services/FileService/FileService';
+import ProjectService from '../../services/ProjectService/ProjectService';
 
 export default function EditorScreen() {
   // Estados principais
@@ -40,6 +41,10 @@ export default function EditorScreen() {
   const [serialData, setSerialData] = useState('');
   const [serialInput, setSerialInput] = useState('');
   const [showSerialMonitor, setShowSerialMonitor] = useState(false);
+
+  // Estados do gerenciador de bibliotecas
+  const [showLibraryManager, setShowLibraryManager] = useState(false);
+  const [projectLibraries, setProjectLibraries] = useState([]);
 
   // Refs
   const consoleRef = useRef(null);
@@ -66,6 +71,12 @@ export default function EditorScreen() {
         setCurrentProject(project);
         setCode(project.code);
         addToConsole(`Projeto carregado: ${project.name}`);
+        
+        // Carregar bibliotecas do projeto
+        if (project.libraries) {
+          setProjectLibraries(project.libraries);
+          addToConsole(`Carregadas ${project.libraries.length} bibliotecas do projeto`);
+        }
       } else {
         // Criar projeto padrão com nome único
         const timestamp = new Date().toLocaleString('pt-BR');
@@ -320,6 +331,32 @@ export default function EditorScreen() {
     setSerialData('');
   };
 
+  // Gerenciar bibliotecas do projeto
+  const handleLibrariesChange = async (newLibraries) => {
+    setProjectLibraries(newLibraries);
+    
+    // Salvar bibliotecas no projeto
+    if (currentProject) {
+      try {
+        await ProjectService.updateProject(currentProject.id, {
+          libraries: newLibraries
+        });
+        addToConsole(`Bibliotecas atualizadas: ${newLibraries.length} bibliotecas`);
+      } catch (error) {
+        console.error('Erro ao salvar bibliotecas:', error);
+        addToConsole(`Erro ao salvar bibliotecas: ${error.message}`);
+      }
+    }
+  };
+
+  // Carregar bibliotecas do projeto
+  const loadProjectLibraries = async () => {
+    if (currentProject && currentProject.libraries) {
+      setProjectLibraries(currentProject.libraries);
+      addToConsole(`Carregadas ${currentProject.libraries.length} bibliotecas do projeto`);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Toolbar */}
@@ -359,6 +396,15 @@ export default function EditorScreen() {
 
           <TouchableOpacity style={styles.toolbarButton} onPress={saveProject}>
             <Text style={styles.toolbarButtonText}>Salvar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.toolbarButton} 
+            onPress={() => setShowLibraryManager(true)}
+          >
+            <Text style={styles.toolbarButtonText}>
+              Bibliotecas ({projectLibraries.length})
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -496,6 +542,14 @@ export default function EditorScreen() {
           </View>
         </View>
       </Modal>
+
+      {/* Gerenciador de Bibliotecas */}
+      <LibraryManager
+        visible={showLibraryManager}
+        onClose={() => setShowLibraryManager(false)}
+        projectLibraries={projectLibraries}
+        onLibrariesChange={handleLibrariesChange}
+      />
     </SafeAreaView>
   );
 }

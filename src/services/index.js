@@ -3,4 +3,5 @@ export {default as BoardService} from './BoardService/BoardService';
 export {default as CompilerService} from './CompilerService/CompilerService';
 export {default as FileService} from './FileService/FileService';
 export {default as AuthService} from './AuthService/AuthService';
-export {default as ProjectService} from './ProjectService/ProjectService'; 
+export {default as ProjectService} from './ProjectService/ProjectService';
+export {default as LibraryService} from './LibraryService/LibraryService'; 
