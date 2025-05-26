@@ -144,10 +144,12 @@ export default function LoginScreen({navigation}) {
           
           {/* Logo e título */}
           <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Text style={styles.logoText}>A</Text>
-            </View>
-            <Text style={styles.title}>Andruino IDE</Text>
+            <Image 
+              source={require('../../../assets/andruino.png')} 
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.title}>Andruino</Text>
             <Text style={styles.subtitle}>
               {isLoginMode ? 'Entre na sua conta' : 'Crie sua conta'}
             </Text>
@@ -180,6 +182,14 @@ export default function LoginScreen({navigation}) {
               style={styles.primaryButton}
             />
 
+
+            <Button
+              title={isLoginMode ? 'Criar nova conta' : 'Já tenho uma conta'}
+              onPress={toggleMode}
+              variant="outline"
+              style={styles.secondaryButton}
+            />
+
             {isLoginMode && (
               <Button
                 title="Esqueci minha senha"
@@ -189,12 +199,6 @@ export default function LoginScreen({navigation}) {
               />
             )}
 
-            <Button
-              title={isLoginMode ? 'Criar nova conta' : 'Já tenho uma conta'}
-              onPress={toggleMode}
-              variant="outline"
-              style={styles.secondaryButton}
-            />
           </View>
 
           {/* Informações adicionais */}
@@ -227,19 +231,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xxl,
   },
-  logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.lg,
-  },
-  logoText: {
-    fontSize: 36,
-    fontFamily: typography.fontFamily.bold,
-    color: colors.text.primary,
+  logo: {
+    width: 120,
+    height: 120,
+    marginBottom: spacing.xs,
   },
   title: {
     fontSize: typography.fontSize.xxl,

@@ -18,6 +18,7 @@ export const typography = {
     xxl: 20,
     '2xl': 20,
     '3xl': 24,
+    '3x1': 28,
     '4xl': 32,
     '5xl': 48,
   },

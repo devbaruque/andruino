@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {colors, typography, spacing} from '../../theme';
@@ -73,9 +74,11 @@ export default function RegisterScreen({navigation}) {
           
           {/* Header */}
           <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Text style={styles.logoText}>A</Text>
-            </View>
+            <Image 
+              source={require('../../../assets/andruino.png')} 
+              style={styles.logo}
+              resizeMode="contain"
+            />
             <Text style={styles.title}>Criar Conta</Text>
             <Text style={styles.subtitle}>
               Junte-se à comunidade Andruino
@@ -163,19 +166,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xxl,
   },
-  logoContainer: {
+  logo: {
     width: 80,
     height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: spacing.lg,
-  },
-  logoText: {
-    fontSize: 36,
-    fontFamily: typography.fontFamily.bold,
-    color: colors.text.primary,
   },
   title: {
     fontSize: typography.fontSize.xxl,
