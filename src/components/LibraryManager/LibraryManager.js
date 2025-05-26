@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import LibraryService from '../../services/LibraryService';
+import NotificationService from '../../services/NotificationService/NotificationService';
 import {colors, typography, spacing} from '../../theme';
 
 const LibraryManager = ({
@@ -94,9 +95,11 @@ const LibraryManager = ({
     if (isInProject) {
       // Remover biblioteca do projeto
       updatedLibraries = projectLibraries.filter(name => name !== library.name);
+      NotificationService.showLibraryNotification('uninstalled', library.name);
     } else {
       // Adicionar biblioteca ao projeto
       updatedLibraries = [...projectLibraries, library.name];
+      NotificationService.showLibraryNotification('installed', library.name);
     }
     
     onLibrariesChange(updatedLibraries);
@@ -120,10 +123,12 @@ const LibraryManager = ({
           text: 'Com dependências',
           onPress: () => {
             let updatedLibraries = [...projectLibraries];
+            let addedCount = 0;
             
             // Adicionar biblioteca principal
             if (!updatedLibraries.includes(library.name)) {
               updatedLibraries.push(library.name);
+              addedCount++;
             }
             
             // Adicionar dependências
@@ -131,10 +136,22 @@ const LibraryManager = ({
               const depName = typeof dep === 'string' ? dep : dep.name;
               if (!updatedLibraries.includes(depName)) {
                 updatedLibraries.push(depName);
+                addedCount++;
               }
             });
             
             onLibrariesChange(updatedLibraries);
+            
+            // Notificar sobre as bibliotecas adicionadas
+            if (addedCount > 1) {
+              NotificationService.showLibraryNotification(
+                'installed', 
+                library.name, 
+                `${library.name} e ${addedCount - 1} dependências adicionadas`
+              );
+            } else {
+              NotificationService.showLibraryNotification('installed', library.name);
+            }
           }
         }
       ]

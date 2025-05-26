@@ -94,6 +94,17 @@ export default function SettingsScreen({navigation}) {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Notificações</Text>
+
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => navigation.navigate('NotificationSettings')}>
+            <Text style={styles.settingLabel}>Configurar notificações</Text>
+            <Text style={styles.settingValue}>🔔</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>Sobre</Text>
 
           <TouchableOpacity

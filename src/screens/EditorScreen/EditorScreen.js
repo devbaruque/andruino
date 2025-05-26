@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {colors, typography, spacing} from '../../theme';
-import {Button, LibraryManager} from '../../components';
+import {Button, LibraryManager, SerialChart, PerformanceMonitor} from '../../components';
 
 // Importar serviços
 import USBService from '../../services/USBService/USBService';
@@ -21,6 +21,7 @@ import CompilerService from '../../services/CompilerService/CompilerService';
 import BoardService from '../../services/BoardService/BoardService';
 import FileService from '../../services/FileService/FileService';
 import ProjectService from '../../services/ProjectService/ProjectService';
+import NotificationService from '../../services/NotificationService/NotificationService';
 
 export default function EditorScreen() {
   // Estados principais
@@ -41,6 +42,8 @@ export default function EditorScreen() {
   const [serialData, setSerialData] = useState('');
   const [serialInput, setSerialInput] = useState('');
   const [showSerialMonitor, setShowSerialMonitor] = useState(false);
+  const [showSerialChart, setShowSerialChart] = useState(false);
+  const [showPerformanceMonitor, setShowPerformanceMonitor] = useState(false);
 
   // Estados do gerenciador de bibliotecas
   const [showLibraryManager, setShowLibraryManager] = useState(false);
@@ -63,6 +66,10 @@ export default function EditorScreen() {
   // Inicializar serviços
   const initializeServices = async () => {
     try {
+      // Inicializar NotificationService primeiro
+      await NotificationService.initialize();
+      NotificationService.showInfoNotification('Sistema', 'Andruino IDE iniciado');
+      
       await FileService.initialize();
       
       // Carregar projeto atual se existir
@@ -71,6 +78,7 @@ export default function EditorScreen() {
         setCurrentProject(project);
         setCode(project.code);
         addToConsole(`Projeto carregado: ${project.name}`);
+        NotificationService.showProjectNotification('loaded', project.name);
         
         // Carregar bibliotecas do projeto
         if (project.libraries) {
@@ -85,10 +93,12 @@ export default function EditorScreen() {
         setCurrentProject(defaultProject);
         setCode(defaultProject.code);
         addToConsole('Novo projeto criado');
+        NotificationService.showProjectNotification('created', projectName);
       }
     } catch (error) {
       console.error('Erro ao inicializar serviços:', error);
       addToConsole(`Erro: ${error.message}`);
+      NotificationService.showErrorNotification('Inicialização', error.message);
     }
   };
 
@@ -117,13 +127,19 @@ export default function EditorScreen() {
       case 'connected':
         setIsConnected(true);
         addToConsole(`Conectado: ${data.devicePath} (${data.baudRate} baud)`);
+        NotificationService.showUSBNotification('connected', {
+          name: data.deviceName,
+          port: data.devicePath
+        });
         break;
       case 'disconnected':
         setIsConnected(false);
         addToConsole('Dispositivo desconectado');
+        NotificationService.showUSBNotification('disconnected');
         break;
       case 'error':
         addToConsole(`Erro de conexão: ${data.error}`);
+        NotificationService.showUSBNotification('error');
         break;
     }
   };
@@ -143,17 +159,21 @@ export default function EditorScreen() {
       case 'start':
         setIsUploading(true);
         addToConsole('Iniciando upload...');
+        NotificationService.showUploadNotification('start');
         break;
       case 'progress':
         addToConsole(`${data.message} (${data.progress}%)`);
+        NotificationService.showUploadNotification('progress', data.message, data.progress);
         break;
       case 'complete':
         setIsUploading(false);
         addToConsole(`Upload concluído! (${data.size} bytes)`);
+        NotificationService.showUploadNotification('success', `Upload concluído (${data.size} bytes)`);
         break;
       case 'error':
         setIsUploading(false);
         addToConsole(`Erro no upload: ${data.error}`);
+        NotificationService.showUploadNotification('error', data.error);
         break;
     }
   };
@@ -164,6 +184,7 @@ export default function EditorScreen() {
       case 'start':
         setIsCompiling(true);
         addToConsole('Iniciando compilação...');
+        NotificationService.showCompilationNotification('start');
         break;
       case 'progress':
         addToConsole(`${data.message} (${data.progress}%)`);
@@ -173,11 +194,15 @@ export default function EditorScreen() {
         addToConsole('Compilação concluída!');
         if (data.warnings && data.warnings.length > 0) {
           data.warnings.forEach(warning => addToConsole(`Aviso: ${warning}`));
+          NotificationService.showCompilationNotification('warning', `Compilação concluída com ${data.warnings.length} avisos`);
+        } else {
+          NotificationService.showCompilationNotification('success');
         }
         break;
       case 'error':
         setIsCompiling(false);
         addToConsole(`Erro de compilação: ${data.error}`);
+        NotificationService.showCompilationNotification('error', data.error);
         break;
     }
   };
@@ -200,8 +225,10 @@ export default function EditorScreen() {
     try {
       await FileService.saveCurrentProject(code, detectedBoard?.id);
       addToConsole('Projeto salvo');
+      NotificationService.showProjectNotification('saved', currentProject.name);
     } catch (error) {
       addToConsole(`Erro ao salvar: ${error.message}`);
+      NotificationService.showProjectNotification('error', currentProject.name, error.message);
     }
   };
 
@@ -220,18 +247,23 @@ export default function EditorScreen() {
       }
     } catch (error) {
       addToConsole(`Erro na compilação: ${error.message}`);
+      NotificationService.showCompilationNotification('error', error.message);
     }
   };
 
   // Upload do código
   const uploadCode = async () => {
     if (!isConnected) {
-      Alert.alert('Erro', 'Conecte-se a um dispositivo primeiro');
+      const errorMsg = 'Conecte-se a um dispositivo primeiro';
+      Alert.alert('Erro', errorMsg);
+      NotificationService.showErrorNotification('Upload', errorMsg);
       return;
     }
 
     if (!currentProject?.compiledBinary) {
-      Alert.alert('Erro', 'Compile o código primeiro');
+      const errorMsg = 'Compile o código primeiro';
+      Alert.alert('Erro', errorMsg);
+      NotificationService.showErrorNotification('Upload', errorMsg);
       return;
     }
 
@@ -242,6 +274,7 @@ export default function EditorScreen() {
       );
     } catch (error) {
       Alert.alert('Erro no Upload', error.message);
+      NotificationService.showUploadNotification('error', error.message);
     }
   };
 
@@ -264,6 +297,7 @@ export default function EditorScreen() {
       checkCompilation();
     } catch (error) {
       addToConsole(`Erro: ${error.message}`);
+      NotificationService.showErrorNotification('Compilação e Upload', error.message);
     }
   };
 
@@ -280,10 +314,14 @@ export default function EditorScreen() {
         if (board) {
           setDetectedBoard(board);
           addToConsole(`Placa detectada: ${board.name} (${Math.round(board.confidence * 100)}% confiança)`);
+          NotificationService.showInfoNotification('Detecção', `Placa detectada: ${board.name}`);
         }
+      } else {
+        NotificationService.showWarningNotification('Dispositivos', 'Nenhum dispositivo Arduino encontrado');
       }
     } catch (error) {
       addToConsole(`Erro ao escanear dispositivos: ${error.message}`);
+      NotificationService.showErrorNotification('Escaneamento', error.message);
     } finally {
       setIsScanning(false);
     }
@@ -296,6 +334,7 @@ export default function EditorScreen() {
       setShowDeviceModal(false);
     } catch (error) {
       Alert.alert('Erro de Conexão', error.message);
+      NotificationService.showUSBNotification('error');
     }
   };
 
@@ -305,6 +344,7 @@ export default function EditorScreen() {
       await USBService.disconnect();
     } catch (error) {
       addToConsole(`Erro ao desconectar: ${error.message}`);
+      NotificationService.showErrorNotification('Desconexão', error.message);
     }
   };
 
@@ -317,6 +357,7 @@ export default function EditorScreen() {
       setSerialInput('');
     } catch (error) {
       addToConsole(`Erro ao enviar dados: ${error.message}`);
+      NotificationService.showErrorNotification('Monitor Serial', error.message);
     }
   };
 
@@ -342,9 +383,11 @@ export default function EditorScreen() {
           libraries: newLibraries
         });
         addToConsole(`Bibliotecas atualizadas: ${newLibraries.length} bibliotecas`);
+        NotificationService.showInfoNotification('Bibliotecas', `${newLibraries.length} bibliotecas configuradas`);
       } catch (error) {
         console.error('Erro ao salvar bibliotecas:', error);
         addToConsole(`Erro ao salvar bibliotecas: ${error.message}`);
+        NotificationService.showErrorNotification('Bibliotecas', error.message);
       }
     }
   };
@@ -392,6 +435,22 @@ export default function EditorScreen() {
             style={styles.toolbarButton}
             onPress={() => setShowSerialMonitor(!showSerialMonitor)}>
             <Text style={styles.toolbarButtonText}>Monitor Serial</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.toolbarButton, showSerialChart && styles.toolbarButtonActive]}
+            onPress={() => setShowSerialChart(!showSerialChart)}>
+            <Text style={[styles.toolbarButtonText, showSerialChart && styles.toolbarButtonTextActive]}>
+              📊 Gráfico
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.toolbarButton, showPerformanceMonitor && styles.toolbarButtonActive]}
+            onPress={() => setShowPerformanceMonitor(!showPerformanceMonitor)}>
+            <Text style={[styles.toolbarButtonText, showPerformanceMonitor && styles.toolbarButtonTextActive]}>
+              ⚡ Performance
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.toolbarButton} onPress={saveProject}>
@@ -483,6 +542,19 @@ export default function EditorScreen() {
           </View>
         </View>
       )}
+
+      {/* Performance Monitor */}
+      <PerformanceMonitor
+        isVisible={showPerformanceMonitor}
+        onToggle={() => setShowPerformanceMonitor(!showPerformanceMonitor)}
+      />
+
+      {/* Serial Chart */}
+      <SerialChart
+        isVisible={showSerialChart}
+        serialData={serialData}
+        onToggle={() => setShowSerialChart(!showSerialChart)}
+      />
 
       {/* Modal de dispositivos */}
       <Modal
@@ -743,5 +815,11 @@ const styles = StyleSheet.create({
   },
   disconnectButton: {
     marginBottom: spacing.md,
+  },
+  toolbarButtonActive: {
+    backgroundColor: colors.button.active,
+  },
+  toolbarButtonTextActive: {
+    color: colors.text.active,
   },
 });

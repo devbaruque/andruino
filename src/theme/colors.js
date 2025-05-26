@@ -19,6 +19,7 @@ export const colors = {
     secondary: '#bdc3c7', // Texto secundário
     tertiary: '#95a5a6', // Texto terciário
     placeholder: '#7f8c8d', // Placeholder
+    active: '#ffffff', // Texto ativo
   },
 
   // Estados
@@ -40,6 +41,7 @@ export const colors = {
     success: '#27ae60',
     danger: '#e74c3c',
     disabled: '#7fb3d3',
+    active: '#2980b9', // Botão ativo
   },
 
   // Transparências

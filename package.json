@@ -12,7 +12,9 @@
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "2.1.2",
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@react-native-clipboard/clipboard": "^1.16.2",
+    "@react-native-community/push-notification-ios": "^1.11.0",
     "@react-navigation/bottom-tabs": "^6.5.20",
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
@@ -24,10 +26,14 @@
     "expo-status-bar": "~2.2.3",
     "react": "19.0.0",
     "react-native": "0.79.2",
+    "react-native-chart-kit": "^6.12.0",
     "react-native-crypto": "^2.2.0",
     "react-native-fs": "^2.20.0",
+    "react-native-push-notification": "^8.1.1",
+    "react-native-qrcode-svg": "^6.3.15",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
+    "react-native-svg": "^15.12.0",
     "react-native-url-polyfill": "^2.0.0",
     "readable-stream": "^4.7.0",
     "util": "^0.12.5"

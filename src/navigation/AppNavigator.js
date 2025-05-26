@@ -13,6 +13,7 @@ import ProjectsScreen from '../screens/ProjectsScreen/ProjectsScreen';
 import LibrariesScreen from '../screens/LibrariesScreen/LibrariesScreen';
 import SettingsScreen from '../screens/SettingsScreen/SettingsScreen';
 import DonationScreen from '../screens/DonationScreen/DonationScreen';
+import NotificationSettingsScreen from '../screens/NotificationSettingsScreen/NotificationSettingsScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -105,6 +106,7 @@ export default function AppNavigator() {
           <>
             <Stack.Screen name="Main" component={MainTabNavigator} />
             <Stack.Screen name="Donation" component={DonationScreen} />
+            <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
           </>
         ) : (
           // Usuário não autenticado - mostrar telas de login

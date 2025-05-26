@@ -4,4 +4,6 @@ export {default as CompilerService} from './CompilerService/CompilerService';
 export {default as FileService} from './FileService/FileService';
 export {default as AuthService} from './AuthService/AuthService';
 export {default as ProjectService} from './ProjectService/ProjectService';
-export {default as LibraryService} from './LibraryService/LibraryService'; 
+export {default as LibraryService} from './LibraryService/LibraryService';
+export {default as NotificationService} from './NotificationService';
+export {default as CacheService} from './CacheService'; 
